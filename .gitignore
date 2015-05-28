@@ -1,0 +1,6 @@
+.access
+.ruby-gemset
+.ruby-version
+.processed
+settings.private.yaml
+temp_*

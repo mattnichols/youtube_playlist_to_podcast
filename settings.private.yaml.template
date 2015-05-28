@@ -1,0 +1,28 @@
+:credentials:
+  :dropbox:
+    :appkey: ''
+    :secret: ''
+  :huffduffer:
+    :login: ''
+    :password: ''
+:playlists:
+- :id: PLVlZ87_DDoM09-yp3ExHRSPTU7XamSVC4
+  :type: playlist
+  :tag: dicetowerqanda
+  :filters:
+    :includes: []
+    :excludes: []
+- :id: PL97ADFA21D301E54F
+  :type: playlist
+  :tag: dicetowertopten
+  :filters:
+    :includes:
+    - top ten
+    - top 10
+    :excludes:
+    - metzler
+    - HAMTAG
+    - Game Boy Geek
+    - mage wars
+    - Summoner Wars
+    - Smash Up

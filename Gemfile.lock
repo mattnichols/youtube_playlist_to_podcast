@@ -1,0 +1,43 @@
+GIT
+  remote: https://github.com/futuresimple/dropbox-api.git
+  revision: f0687e975017ab37e5f48e8916e3f478fde700c7
+  specs:
+    dropbox-api (0.4.6)
+      hashie (~> 2.0.5)
+      multi_json (~> 1.7)
+      oauth (~> 0.4.7)
+
+GIT
+  remote: https://github.com/mattnichols/atomic-parsley-ruby.git
+  revision: 4970436156e705b3d1b77da63424ee6fbfafc386
+  specs:
+    atomic-parsley-ruby (0.0.5)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    childprocess (0.5.5)
+      ffi (~> 1.0, >= 1.0.11)
+    ffi (1.9.8)
+    hashie (2.0.5)
+    multi_json (1.11.0)
+    oauth (0.4.7)
+    rake (10.1.0)
+    rubyzip (1.1.7)
+    selenium-webdriver (2.45.0)
+      childprocess (~> 0.5)
+      multi_json (~> 1.0)
+      rubyzip (~> 1.0)
+      websocket (~> 1.0)
+    watir-webdriver (0.7.0)
+      selenium-webdriver (>= 2.45)
+    websocket (1.2.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  atomic-parsley-ruby!
+  dropbox-api!
+  rake
+  watir-webdriver

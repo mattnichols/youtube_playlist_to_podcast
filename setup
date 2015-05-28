@@ -1,0 +1,14 @@
+#!/bin/bash
+
+echo "Checking private settings file..."
+if [ -f ./settings.private.yaml ]
+then
+    echo "Settings file already exists."
+else
+    echo "Creating private settings file..."
+    cp ./settings.private.yaml.template ./settings.private.yaml
+    mate ./settings.private.yaml
+fi
+
+brew install atomicparsley
+bundle
