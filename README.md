@@ -72,7 +72,7 @@ Example configuration:
 
 * Add commandline help
 * Get rid of use of Watir for Huffduffer post. Switch to headless browser or use Huffduffer API
-
+* Finish implementing user type and query options in configuration
 
 ## License
 
