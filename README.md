@@ -62,11 +62,11 @@ Example configuration:
 
 ### List videos that will be processed
 
-    ruby run.rb list
+    ./pc list
   
 ### Process videos
 
-    ruby run.rb
+    ./pc
 
 ## To Do
 
