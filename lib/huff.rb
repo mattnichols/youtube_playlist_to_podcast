@@ -17,8 +17,6 @@ class Huff
       b.textarea(:id => 'bookmark_description').set "YouTube source: #{URI.encode(source)} \n\n" + description
       b.text_field(:id => 'bookmark_tags').set keywords
       b.button(:type => 'submit', :text => "Huffduff it").click
-      
-      sleep(10)
       b.link(:text => "edit").click
       b.text_field(:name => "bookmark[url]").set url
       b.button(:type => 'submit', :text => "Update").click
