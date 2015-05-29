@@ -15,3 +15,6 @@ PLAYLISTS = SETTINGS[:playlists]
 Dropbox::API::Config.app_key    = SETTINGS[:credentials][:dropbox][:appkey]
 Dropbox::API::Config.app_secret = SETTINGS[:credentials][:dropbox][:secret]
 Dropbox::API::Config.mode       = "dropbox"
+
+HD_USERNAME = SETTINGS[:credentials][:huffduffer][:login]
+HD_PASSWORD = SETTINGS[:credentials][:huffduffer][:password]
