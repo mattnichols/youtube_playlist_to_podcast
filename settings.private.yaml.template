@@ -1,10 +1,15 @@
-:credentials:
+:connections:
+  :feed_type: podcast_feed
   :dropbox:
     :appkey: ''
     :secret: ''
   :huffduffer:
     :login: ''
     :password: ''
+  :podcast_feed:
+    :feeds_url: http://localhost:3000/feeds
+  :youtube:
+    :api_key: 
 :playlists:
 - :id: PLVlZ87_DDoM09-yp3ExHRSPTU7XamSVC4
   :type: playlist

@@ -29,6 +29,7 @@ class YoutubePlaylist
     end
     
     uri = URI.parse(url)
+    puts uri
     loop do
       response = JSON.parse(Net::HTTP.get_response(uri).body)
       break if response['feed']['entry'].nil? # Contains no videos

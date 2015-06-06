@@ -4,17 +4,24 @@ require './lib/youtube_video.rb'
 require './lib/youtube_playlist.rb'
 require './lib/youtube_playlist_filter.rb'
 require './lib/audio_extractor.rb'
-require './lib/huff.rb'
 require './lib/time.rb'
 require './lib/audio_tagger.rb'
+
+require './lib/huffduffer.rb'
+require './lib/web.rb'
 
 cmd = ARGV[0] || "process"
 
 def load_videos
   videos = []
   PLAYLISTS.each do |p|
-    filter = YoutubePlaylistFilter.new(p.delete(:filters))
-    videos += filter.filter(YoutubePlaylist.new(p).playlist)
+    begin
+      filter = YoutubePlaylistFilter.new(p.delete(:filters))
+      videos += filter.filter(YoutubePlaylist.new(p).playlist)
+    rescue StandardError => e
+      puts "Error loading playlist #{p}"
+      puts "#{e.message}"
+    end
   end
   
   videos.sort_by{ |vid| vid[:uploaded] }
@@ -48,14 +55,23 @@ elsif cmd == "process"
         
         if i[:savevideo]
           puts "Uploading video to Dropbox..."
-          Dropboxer.new.upload(vidpath, "Public/Podcast/#{i[:title]}.#{File.extname(vidpath)}")
+          path = "Public/Podcast/#{i[:title]}.#{File.extname(vidpath)}"
+          puts "Path: #{path}"
+          Dropboxer.new.upload(vidpath, path)
         end
         
         puts "Uploading audio to Dropbox..."
-        share = Dropboxer.new.upload(audpath, "Public/Podcast/#{i[:title]}.m4a")
+        path = "Public/Podcast/#{i[:title]}.m4a"
+        puts "Path: #{path}"
+        share = Dropboxer.new.upload(audpath, path)
         
-        puts "Posting to Huffduffer..."
-        Huff.new.duffit(share, yt.url, i[:title], i[:author], i[:description], (i[:tag].nil? ? "" : "#{i[:tag]},") + i[:keywords])
+        if PODCAST_TYPE == "huffduffer"
+          puts "Posting to Huffduffer..."
+          PodcastFeed::Huffduffer.new.duffit(share, yt.url, i[:title], i[:author], i[:description], (i[:tag].nil? ? "" : "#{i[:tag]},") + i[:keywords])
+        elsif PODCAST_TYPE == "podcast_feed"
+          puts "Posting to podcast feed..."
+          PodcastFeed::Web.new.post(share, yt.url, i[:title], i[:author], i[:description], (i[:tag].nil? ? "" : "#{i[:tag]},") + i[:keywords])
+        end
         
         pf << "#{i[:id]}\n"
       ensure
