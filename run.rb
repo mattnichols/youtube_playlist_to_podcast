@@ -21,32 +21,30 @@ def load_videos
     rescue StandardError => e
       puts "Error loading playlist #{p}"
       puts "#{e.message}"
+      puts "#{e.backtrace}"
     end
   end
   
   videos.sort_by{ |vid| vid[:uploaded] }
 end
 
-if cmd == "list"
-  load_videos.each do |vid|
-    puts "#{vid[:tag]} - #{vid[:id]} - #{vid[:title]}"
-  end
-  
-elsif cmd == "process"
-  # TODO: Check processed from huffduffer feed
-  processed = []
-  processed = File.readlines('.processed').collect { |l| l.strip } if File.exists?('.processed')
-  
-  pf = open('.processed', 'a')
-  begin
+processed = []
+processed = File.readlines('.processed').collect { |l| l.strip } if File.exists?('.processed')
+pf = open('.processed', 'a')
+
+begin
+  if cmd == "list"
+    load_videos.each do |vid|
+      next if processed.include?(vid[:id])
+      puts "#{vid.tag} - #{vid.id} - #{vid.title} by #{vid.author}"
+    end
+    
+  elsif cmd == "process"
     load_videos.each do |i|
       next if processed.include?(i[:id])
       begin begin begin
-        yt = YoutubeVideo.new(i[:id])
-        i[:keywords] = yt.keywords
-        
         puts "Downloading \"#{i[:title]}\" by #{i[:author]}..."
-        vidpath = yt.download
+        vidpath = i.download
         puts "Extracting audio..."
         audpath = AudioExtractor.new(vidpath).extract
         
@@ -67,10 +65,10 @@ elsif cmd == "process"
         
         if PODCAST_TYPE == "huffduffer"
           puts "Posting to Huffduffer..."
-          PodcastFeed::Huffduffer.new.duffit(share, yt.url, i[:title], i[:author], i[:description], (i[:tag].nil? ? "" : "#{i[:tag]},") + i[:keywords])
+          PodcastFeed::Huffduffer.new.duffit(share, i.url, i[:title], i[:author], i[:description], (i[:tag].nil? ? "" : "#{i[:tag]},") + i[:keywords])
         elsif PODCAST_TYPE == "podcast_feed"
           puts "Posting to podcast feed..."
-          PodcastFeed::Web.new.post(share, yt.url, i[:title], i[:author], i[:description], (i[:tag].nil? ? "" : "#{i[:tag]},") + i[:keywords])
+          PodcastFeed::Web.new.post(share, i.url, i[:title], i[:author], i[:description], (i[:tag].nil? ? "" : "#{i[:tag]},") + i[:keywords])
         end
         
         pf << "#{i[:id]}\n"
@@ -87,11 +85,12 @@ elsif cmd == "process"
         puts e.backtrace.inspect
       end
     end
-  ensure
-    pf.close
-  end
+    
+  else
+    puts "Invalid command #{cmd}"
+    
+  end # process cmd
   
-else
-  puts "Invalid command #{cmd}"
-  
-end # process cmd
+ensure
+  pf.close
+end

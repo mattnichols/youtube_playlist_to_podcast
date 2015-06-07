@@ -1,5 +1,5 @@
 :connections:
-  :feed_type: podcast_feed
+  :feed_type: 'podcast_feed'
   :dropbox:
     :appkey: ''
     :secret: ''
@@ -14,6 +14,7 @@
 - :id: PLVlZ87_DDoM09-yp3ExHRSPTU7XamSVC4
   :type: playlist
   :tag: dicetowerqanda
+  :savevideo: true
   :filters:
     :includes: []
     :excludes: []

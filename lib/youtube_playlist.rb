@@ -15,41 +15,40 @@ class YoutubePlaylist
   
   def load_playlist
     @playlist = []
+    nextPageToken = ""
     
-    if @type == "user"
-      url = "https://gdata.youtube.com/feeds/api/users/#{@id}/uploads/?v=2&alt=json"
-    elsif @type == "playlist"
-      url = "https://gdata.youtube.com/feeds/api/playlists/#{@id}/?v=2&alt=json&feature=plcp"
-    else
-      raise StandardError, "Invalid type: #{@type}"
-    end
-    
-    if not @query.nil?
-      url << "&q=#{URI::encode(@query)}"
-    end
-    
-    uri = URI.parse(url)
-    puts uri
     loop do
-      response = JSON.parse(Net::HTTP.get_response(uri).body)
-      break if response['feed']['entry'].nil? # Contains no videos
+      if @type == "user"
+        url = "https://gdata.youtube.com/feeds/api/users/#{@id}/uploads/?v=2&alt=json"
+      elsif @type == "playlist"
+        url = "https://content.googleapis.com/youtube/v3/playlistItems?part=snippet%2CcontentDetails&playlistId=#{@id}&key=#{YOUTUBE_API_KEY}" + (nextPageToken.empty? ? "" : "&pageToken=#{nextPageToken}")
+      else
+        raise StandardError, "Invalid type: #{@type}"
+      end
       
-      @playlist << response['feed']['entry'].collect do |cur|
-        n = {}
-        n[:id] = cur['media$group']['yt$videoid']['$t']
-        n[:title] = cur['title']['$t']
-        n[:author] = cur['author'].first['name']['$t']
-        n[:description] = cur['media$group']['media$description'].nil? ? "" : cur['media$group']['media$description']['$t']
-        n[:uploaded] = cur['media$group']['yt$uploaded']['$t']
-        n[:thumbnail] = cur['media$group']['media$thumbnail'].nil? ? nil : cur['media$group']['media$thumbnail'].select { |t| t['yt$name'] == "default" }.first['url']
+      if not @query.nil?
+        url << "&q=#{URI::encode(@query)}"
+      end
+
+      uri = URI.parse(url)
+
+      response = JSON.parse(Net::HTTP.get_response(uri).body)
+      # puts response
+      
+      break if response['items'].nil? # Contains no videos
+      
+      @playlist << response['items'].collect do |cur|
+        n = YoutubeVideo.new(cur['snippet']['resourceId']['videoId'])
+        n[:title] = cur['snippet']['title']
+        n[:description] = cur['snippet']['description'].nil? ? "" : cur['snippet']['description']
+        n[:uploaded] = cur['snippet']['publishedAt']
+        n[:thumbnail] = cur['snippet']['thumbnails']['default'].nil? ? nil : cur['snippet']['thumbnails']['default']['url']
         n[:tag] = @tag
         
         n
       end
-      next_url = response['feed']['link'].select { |l| l['rel'] == 'next' }
-      if(not next_url.empty?)
-        uri = URI.parse(next_url.first['href'])
-      else
+      nextPageToken = response['nextPageToken']
+      if(nextPageToken.nil?)
         break
       end
     end
